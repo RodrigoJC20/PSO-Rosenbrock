@@ -1,9 +1,9 @@
 // Desc: Main entry point for the program
 use rand::Rng;
 
-const PARTICLES: usize = 50;    // number of particles
+const PARTICLES: usize = 15;    // number of particles
 const ITERATIONS: usize = 1000; // number of iterations
-const C1: f64 = 0.5;            // acceleration constant c1 (cognitive component) 
+const C1: f64 = 1.0;            // acceleration constant c1 (cognitive component) 
 const C2: f64 = 1.0;            // acceleration constant c2 (social component)
 const W: f64 = 0.9;             // inertia weight
 const X_MIN: f64 = -5.0;        // minimum value of x
@@ -67,6 +67,8 @@ fn run_pso(swarm: &mut Swarm) {
         if it % 100 == 0 {
             println!("Iteration: {}, gbest: {}", it, swarm.gbest);
         }
+
+        save_fitness_to_csv(it, swarm.gbest);
     }
 
     println!("Best solution found at: x = {}, y = {}, fitness = {}", swarm.gbest_x, swarm.gbest_y, swarm.gbest);
@@ -130,3 +132,20 @@ fn print_params() {
     println!("  Lower and Upper bounds: [{}, {}]", LOWER_BOUND, UPPER_BOUND);
     println!("");
 }
+
+fn save_fitness_to_csv(iteration: usize, fitness: f64) {
+    let filename = format!("test3.csv");
+    
+    let file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&filename)
+        .expect("Error opening CSV file");
+    
+    let mut writer = csv::WriterBuilder::new()
+        .has_headers(false)
+        .from_writer(file);
+
+    writer.serialize((iteration, fitness)).expect("Error writing to CSV file");
+}
+
